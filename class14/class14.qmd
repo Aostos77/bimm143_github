@@ -1,0 +1,217 @@
+---
+title: "Class 14: RNASeq mini project"
+author: "Alejandro Ostos A17978684"
+format: pdf
+toc: TRUE
+---
+
+## Background
+
+## Data Import
+
+Reading the `counts` and `metadata` CSV file
+```{r}
+counts <- read.csv("GSE37704_featurecounts.csv", row.names = 1)
+metadata <- read.csv("GSE37704_metadata.csv")
+```
+
+```{r}
+head(counts)
+```
+
+```{r}
+metadata
+```
+
+```{r}
+ncol(counts)
+```
+
+```{r}
+nrow(metadata)
+```
+Looks like we need to get rid of the first "length" column of our `counts`object.
+
+```{r}
+cleancounts <- counts[,-1]
+head(cleancounts)
+```
+
+```{r}
+colnames(cleancounts)
+```
+
+```{r}
+colnames(cleancounts) == metadata$id
+```
+
+### Remove zero count genes
+
+There are lots of genes with zero counts. We can remove these from furthrt analysis. 
+
+```{r}
+head(cleancounts)
+```
+
+```{r}
+to.keep.inds <- rowSums(cleancounts) > 0
+nonzero_counts <- cleancounts[to.keep.inds,]
+```
+
+## DESeq analysis
+```{r, message=FALSE}
+library(DESeq2)
+```
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData= nonzero_counts,
+                             colData= metadata,
+                             design= ~condition)
+```
+Get Results
+
+```{r}
+dds <- DESeq(dds)
+```
+
+```{r}
+res <- results(dds)
+res
+```
+
+## Data Visualization
+
+Volcano plot
+```{r}
+library(ggplot2)
+
+res$color <- "gray"  # default
+res$color[abs(res$log2FoldChange) > 2] <- "red"
+res$color[(res$padj < 0.01) & (abs(res$log2FoldChange) > 2)] <- "blue"
+
+# Create a volcano plot with ggplot2
+ggplot(res, aes(x = log2FoldChange, y = -log10(padj), color = color)) +
+  geom_point(alpha = 0.7, size = 2) +
+  
+  # Threshold lines
+  geom_vline(xintercept = c(-2, 2), color = "magenta", linewidth = 0.7) +
+  geom_hline(yintercept = -log10(0.1), color = "magenta", linewidth = 0.7) +
+  
+  # Custom color scale (keep your gray-red-blue scheme)
+  scale_color_identity(
+    guide = "legend",
+    breaks = c("gray", "red", "blue"),
+    labels = c("Not significant", "|log2FC| > 2", "|log2FC| > 2 & padj < 0.01"),
+    name = ""
+  ) +
+  
+  # Labels and theme
+  labs(
+    title = "Volcano Plot of Differential Expression",
+    x = expression(Log[2]~Fold~Change),
+    y = expression(-Log[10]~(adjusted~p~value))
+  ) +
+  
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.title = element_text(face = "bold", size = 15, hjust = 0.5),
+    legend.position = "top",
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(color = "gray90")
+  )
+```
+Add Threshold lines for fold-change and P-value and color our subset of genes that make these threshold cut-offs in the plot. 
+
+## Add Annotation
+Add gene symbols and entrez ids
+
+```{r}
+library(AnnotationDbi)
+library(org.Hs.eg.db)
+
+res$symbol <- mapIds(x = org.Hs.eg.db,
+                    keys = row.names(res),
+                    keytype = "ENSEMBL",
+                    column = "SYMBOL")
+
+res$entrez <- mapIds(x = org.Hs.eg.db,
+                    keys = row.names(res),
+                    keytype = "ENSEMBL",
+                    column = "ENTREZID")
+```
+## Pathway Analysis
+
+Run gage analysis
+### KEGG terms
+```{r}
+ library(gage)
+ library(gageData)
+ library(pathview)
+```
+We need a named vector of fold-change values as input for gage
+
+```{r}
+foldchanges = res$log2FoldChange
+names(foldchanges) = res$entrez
+head(foldchanges)
+```
+
+```{r}
+data(kegg.sets.hs)
+
+
+keggres = gage(foldchanges, gsets=kegg.sets.hs)
+head(keggres$less, 5)
+```
+
+```{r}
+pathview(gene.data=foldchanges, pathway.id="hsa04110")
+```
+![](hsa04110.pathview.png)
+
+### GO terms
+Same analysis but using GO genesets rather than KEGG
+
+```{r}
+data(go.sets.hs)
+data(go.subs.hs)
+
+# Focus on Biological Process subset of GO
+gobpsets = go.sets.hs[go.subs.hs$BP]
+
+gobpres = gage(foldchanges, gsets=gobpsets, same.dir=TRUE)
+
+head(gobpres$less, 4)
+```
+
+### Reactome
+
+Lots of folks like the reactome web interface. You can also run this as an R function but letss look at the website first.
+<https://reactome.org/>
+
+The Website wants a text file with one gene symbol per line of the genes you want to map to pathways.
+
+```{r}
+sig_genes <- res[res$padj <= 0.05 & !is.na(res$padj), "symbol"]
+
+```
+
+And write out a file:
+
+```{r}
+
+write.table(sig_genes, file="significant_genes.txt", row.names=FALSE, col.names=FALSE, quote=FALSE)
+```
+
+
+
+## Save our results
+
+```{r}
+write.csv(res, file = "myresults.csv")
+```
+
+
+
+
+
