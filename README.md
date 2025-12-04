@@ -10,6 +10,7 @@ Classwork for [BIMM143 at UC San Diego](https://bioboot.github.io/bimm143_F25/) 
 - Class 11 [AlphaFold](class11/class11.md)
 - Class 12 [DESeq Lab](class12/class12.md)
 - Class 14 [DESeq2 Mini Project](class14/class14.md)
+- Class 16
 - Class 17 [RNAseq Galaxy](class17_bck/class17.md)
 - Class 19 [Pertussis Mini Project](class19_bck/class19.md)
   
