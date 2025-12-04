@@ -1,0 +1,42 @@
+---
+title: "Class17"
+author: "Alejandro Ostos A17978684"
+format: pdf
+---
+
+# Section 1: proportion of G/G in MXL
+
+```{r}
+mxl <- read.csv("373531-SampleGenotypes-Homo_sapiens_Variation_Sample_rs8067378.csv")
+head(mxl)
+```
+```{r}
+table(mxl$Genotype..forward.strand.)/64
+```
+
+```{r}
+expr <- read.table("rs8067378_ENSG00000172057.6.txt")
+head(expr)
+```
+
+```{r}
+nrow(expr)
+```
+
+```{r}
+table(expr$geno)
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(expr) + aes(geno, exp, fill = geno) +
+  geom_boxplot(notch=T)
+```
+
+>Q14: Generate a boxplot with a box per genotype, what could you infer from the relative
+expression value between A/A and G/G displayed in this plot? Does the SNP effect the
+expression of ORMDL3?
+
+G|G has an overall reduced expression compared to A|G and more to A|A. Therefore, the SNP does have an effect on the expression of ORMDL3. 
+
