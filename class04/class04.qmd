@@ -1,0 +1,10 @@
+---
+title: "class04"
+author: "Alejandro Ostos A17978684"
+format: gfm
+---
+```{r}
+x <- 1:50
+ plot(x, sin(x), typ = 'l', lwd = 5, col = 'darkgreen')
+```
+
