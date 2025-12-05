@@ -1,0 +1,40 @@
+# Class 16
+Alejandro Ostos A17978684
+
+``` r
+readLines("unix_notes.txt")
+```
+
+     [1] "This is a simple nano text editor that will be available on every unix machine - that is why I am showing it to you. "
+     [2] ""                                                                                                                     
+     [3] "pwd: printing working dir (where i am)"                                                                               
+     [4] "cd: change directory (move around the file system)"                                                                   
+     [5] "ls: list out files and dirs"                                                                                          
+     [6] "mkdir:  make a new dir"                                                                                               
+     [7] "rm: remove files and folders"                                                                                         
+     [8] "nano: a basic text editor"                                                                                            
+     [9] ""                                                                                                                     
+    [10] "head: show the top lines of a file"                                                                                   
+    [11] "tail: show the bottom lines of a file"                                                                                
+    [12] "cp: copy files or dirs"                                                                                               
+    [13] "mv: move or rename a file or dir"                                                                                     
+    [14] ""                                                                                                                     
+    [15] "## EC2 instance details"                                                                                              
+    [16] ""                                                                                                                     
+    [17] "Open an SSH client."                                                                                                  
+    [18] "Locate your private key file. The key used to launch this instance is keyale.pem"                                     
+    [19] "Run this command, if necessary, to ensure your key is not publicly viewable."                                         
+    [20] ""                                                                                                                     
+    [21] "chmod 400 ~/Dowload/keyale.pem"                                                                                       
+    [22] ""                                                                                                                     
+    [23] "Connect to your instance using its Public DNS:"                                                                       
+    [24] "ec2-54-202-99-175.us-west-2.compute.amazonaws.com"                                                                    
+    [25] "Example:"                                                                                                             
+    [26] "ssh -i ~/Downloads/keyale.pem ubuntu@ec2-54-202-99-175.us-west-2.compute.amazonaws.com"                               
+    [27] ""                                                                                                                     
+    [28] "To copy remote results file:"                                                                                         
+    [29] "scp -i ~/Downloads/keyale.pem ubuntu@ec2-54-202-99-175.us-west-2.compute.amazonaws.com:~/work/my_results.tsv ."       
+    [30] ""                                                                                                                     
+    [31] ""                                                                                                                     
+    [32] ""                                                                                                                     
+    [33] ""                                                                                                                     

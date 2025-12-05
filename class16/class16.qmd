@@ -1,0 +1,10 @@
+---
+title: "Class 16"
+author: "Alejandro Ostos A17978684"
+format: gfm
+---
+
+```{r}
+readLines("unix_notes.txt")
+```
+
